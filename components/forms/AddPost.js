@@ -1,32 +1,22 @@
 import React, { useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { Row, Col, Button } from "reactstrap";
 import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import isEmpty from "lodash/isEmpty";
 import { func } from "prop-types";
+import {
+  FormContainer as FormContainerStyles,
+  Input, TextArea as TextAreaStyles
+} from "./styles";
 import actions from "../../actions/posts";
 
-const inputStyles = css`
-  padding: 16px;
-  border-radius: 8px;
-  width: 100%;
-  box-shadow: rgba(0, 0, 0, 0.08) 0px 3px 10px;
-  outline: none;
-  border: none;
-`;
-
-const FormContainer = styled.div`
-  width: 100%;
+const FormContainer = styled(FormContainerStyles)`
   margin-bottom: 32px;
 `;
 
-const Input = styled.input`
-  ${inputStyles}
-`;
-
-const TextArea = styled.textarea`
-  ${inputStyles}
+const TextArea = styled(TextAreaStyles)`
   margin-top: 12px;
 `;
 
@@ -56,7 +46,7 @@ function AddPost(props) {
   const [postToAdd, setPostToAdd] = useState(initialState);
   const [displayAddPost, setDisplayAddPost] = useState(false);
   
-  const onChange = (key, value) => setPostToAdd({ ...postToAdd, [key]: value });
+  const onChange = (e) => setPostToAdd({ ...postToAdd, [e.target.name]: e.target.value });
 
   function onSubmit() {
     onAddPost(postToAdd);
@@ -74,16 +64,19 @@ function AddPost(props) {
                 value={postToAdd.title}
                 type="text"
                 placeholder="Título"
-                onChange={(e) => onChange("title", e.target.value)}
+                name="title"
+                onChange={onChange}
               />
               <TextArea
                 value={postToAdd.body}
                 placeholder="Descripción"
-                onChange={(e) => onChange("body", e.target.value)}
+                name="body"
+                onChange={onChange}
               />
               <Button
                 color="success"
                 className="float-right mt-3"
+                disabled={isEmpty(postToAdd.title) || isEmpty(postToAdd.body)}
                 onClick={onSubmit}
               >
                 Guardar

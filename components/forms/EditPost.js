@@ -1,37 +1,9 @@
 import React, { useState, useEffect } from "react";
-import styled, { css } from "styled-components";
 import { Row, Col, Label, Button } from "reactstrap";
 import { shape, func } from "prop-types";
 import { connect } from "react-redux";
+import { FormContainer, Input, TextArea, ButtonsContainer } from "./styles";
 import actions from "../../actions/posts";
-
-const inputStyles = css`
-  padding: 16px;
-  border-radius: 8px;
-  width: 100%;
-  box-shadow: rgba(0, 0, 0, 0.08) 0px 3px 10px;
-  outline: none;
-  border: none;
-  margin-bottom: 12px;
-`;
-
-const FormContainer = styled.div`
-  width: 100%;
-`;
-
-const Input = styled.input`
-  ${inputStyles}
-`;
-
-const TextArea = styled.textarea`
-  ${inputStyles}
-`;
-
-const ButtonsContainer = styled.div`
-  display: flex;
-  justify-content: end;
-  margin-top: 20px;
-`;
 
 function EditPost(props) {
   const { post, onOk, onCancel, onUpdatePost} = props;
@@ -43,7 +15,7 @@ function EditPost(props) {
     }
   }, [post]);
   
-  const onChange = (key, value) => setPostToEdit({ ...postToEdit, [key]: value });
+  const onChange = (e) => setPostToEdit({ ...postToEdit, [e.target.name]: e.target.value });
 
   function onBeforeSubmit(e) {
     onUpdatePost(postToEdit);
@@ -60,13 +32,15 @@ function EditPost(props) {
               value={postToEdit.title}
               type="text"
               placeholder="Title"
-              onChange={(e) => onChange("title", e.target.value)}
+              name="title"
+              onChange={onChange}
             />
             <Label>Descripción:</Label>
             <TextArea
               value={postToEdit.body}
               placeholder="Body"
-              onChange={(e) => onChange("body", e.target.value)}
+              name="body"
+              onChange={onChange}
             />
             <ButtonsContainer>
               <Button color="success" onClick={onBeforeSubmit} className="mr-2">
