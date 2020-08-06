@@ -1,65 +1,57 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import React from "react";
+import { arrayOf, shape, bool } from "prop-types";
+import {
+  Container, Spinner
+} from "reactstrap";
+import styled from "styled-components";
+import HOC from "../hoc";
+import actions from "../actions/posts";
+import selectors from "../selectors/user";
+import Posts from "../components/commons/Posts";
+import AddPost from "../components/forms/AddPost";
 
-export default function Home() {
+const StyledContainer = styled(Container)`
+  margin-top: -30px;
+`;
+
+const SpinnerContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+function Home(props) {
+  const { posts, requesting } = props;
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+    <StyledContainer>
+      <AddPost />
+      {requesting ? (
+        <SpinnerContainer>
+          <Spinner style={{ width: "250px", height: "250px", margin: "0 auto" }} type="grow" />
+        </SpinnerContainer>
+      ) : (
+        <Posts posts={posts} />
+      )
+      }
+    </StyledContainer>
   )
 }
+
+Home.defaultProps = {
+  posts: [],
+  requesting: false,
+};
+
+Home.propTypes = {
+  posts: arrayOf(shape()),
+  requesting: bool,
+};
+
+const mapStateToProps = (state) => ({
+  posts: selectors(state).user.posts,
+  requesting: selectors(state).user.requesting,
+});
+
+export default HOC(mapStateToProps)(Home, {
+  type: actions.REQUEST_POSTS,
+});
